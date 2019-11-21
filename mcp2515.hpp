@@ -229,6 +229,7 @@ class MCP2515Handler
     int resetPin;
     void select();
     void unselect();
+    Result instruct(unsigned char instruction);
 
   public:
     MCP2515Handler(int csPin, int resetPin);
@@ -237,7 +238,6 @@ class MCP2515Handler
     Result reset();
     Result switchMode(Mode mode);
     Result instruct(Instruction instruction);
-    Result instruct(unsigned char instruction);
     Result setRegister(Register reg, unsigned char data);
     Result modRegister(Register reg, unsigned char mask, unsigned char data);
     unsigned char readRegister(Register reg);

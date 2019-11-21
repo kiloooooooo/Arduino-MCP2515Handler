@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include "mcp2515.hpp"
 
-SPISettings mcpSpiSettings(10000000, MSBFIRST, SPI_MODE0);
+SPISettings mcpSpiSettings(10000000, LSBFIRST, SPI_MODE0);
 
 /*
  * MCP2515Handler コンストラクタ．
@@ -28,7 +28,8 @@ MCP2515Handler::~MCP2515Handler()
 }
 
 /*
- * MCP2515 を選択します．
+ * *private*
+ * MCP2515 をセレクトします．
  */
 void MCP2515Handler::select()
 {
@@ -36,11 +37,31 @@ void MCP2515Handler::select()
 }
 
 /*
- * MCP2515 の選択を解除します．
+ * *private*
+ * MCP2515 をアンセレクトします．
  */
 void MCP2515Handler::unselect()
 {
   digitalWrite(this->csPin, HIGH);
+}
+
+/*
+ * *private*
+ * MCP2515 に特定の命令を送信します．引数には命令コードを直に渡します．
+ * 
+ * Arguments:
+ *  unsigned char instruction:
+ *    送信する命令．
+ */
+Result MCP2515Handler::instruct(unsigned char instruction)
+{
+  SPI.beginTransaction(mcpSpiSettings);
+  this->select();
+  SPI.transfer(instruction);
+  this->unselect();
+  SPI.endTransaction();
+
+  return Result::OK;
 }
 
 /*
@@ -99,7 +120,7 @@ Result MCP2515Handler::switchMode(Mode mode)
 }
 
 /*
- * MCP2515 に特定の命令を送信します．通常はこちらを使ってください．
+ * MCP2515 に特定の命令を送信します．
  * 
  * Arguments:
  *   Instruction instruction:
@@ -108,24 +129,6 @@ Result MCP2515Handler::switchMode(Mode mode)
 Result MCP2515Handler::instruct(Instruction instruction)
 {
   return this->instruct(static_cast<unsigned char>(instruction));
-}
-
-/*
- * MCP2515 に特定の命令を送信します．RTS 命令にのみこちらを使ってください．
- * 
- * Arguments:
- *  unsigned char instruction:
- *    送信する命令．
- */
-Result MCP2515Handler::instruct(unsigned char instruction)
-{
-  SPI.beginTransaction(mcpSpiSettings);
-  this->select();
-  SPI.transfer(instruction);
-  this->unselect();
-  SPI.endTransaction();
-
-  return Result::OK;
 }
 
 /*
