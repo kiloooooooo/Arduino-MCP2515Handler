@@ -385,10 +385,10 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
  */
 int MCP2515Handler::readId(unsigned char n)
 {
-  unsigned char sidh = 0x00;
-  unsigned char sidl = 0x00;
-  unsigned char eid8 = 0x00;
-  unsigned char eid0 = 0x00;
+  int sidh = 0x00;
+  int sidl = 0x00;
+  int eid8 = 0x00;
+  int eid0 = 0x00;
   int rxId = 0x00000000;
   
   switch (n)
