@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include "mcp2515.hpp"
 
-SPISettings mcpSpiSettings(10000000, LSBFIRST, SPI_MODE0);
+SPISettings mcpSpiSettings(10000000, MSBFIRST, SPI_MODE0);
 
 /*
  * MCP2515Handler コンストラクタ．
