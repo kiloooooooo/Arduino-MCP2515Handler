@@ -285,10 +285,10 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
         this->setRegister(Register::TXB1EID8, eid8);
         this->setRegister(Register::TXB1EID0, eid0);
 
-        sidh_ = this->readRegister(Register::TXB0SIDH);
-        sidl_ = this->readRegister(Register::TXB0SIDL);
-        eid8_ = this->readRegister(Register::TXB0EID8);
-        eid0_ = this->readRegister(Register::TXB0EID0);
+        sidh_ = this->readRegister(Register::TXB1SIDH);
+        sidl_ = this->readRegister(Register::TXB1SIDL);
+        eid8_ = this->readRegister(Register::TXB1EID8);
+        eid0_ = this->readRegister(Register::TXB1EID0);
 
         error = (sidh != sidh_)
                 || (sidl != sidl_)
@@ -301,10 +301,10 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
         this->setRegister(Register::TXB2EID8, eid8);
         this->setRegister(Register::TXB2EID0, eid0);
 
-        sidh_ = this->readRegister(Register::TXB0SIDH);
-        sidl_ = this->readRegister(Register::TXB0SIDL);
-        eid8_ = this->readRegister(Register::TXB0EID8);
-        eid0_ = this->readRegister(Register::TXB0EID0);
+        sidh_ = this->readRegister(Register::TXB2SIDH);
+        sidl_ = this->readRegister(Register::TXB2SIDL);
+        eid8_ = this->readRegister(Register::TXB2EID8);
+        eid0_ = this->readRegister(Register::TXB2EID0);
 
         error = (sidh != sidh_)
                 || (sidl != sidl_)
