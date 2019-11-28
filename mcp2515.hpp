@@ -229,7 +229,6 @@ class MCP2515Handler
     int resetPin;
     void select();
     void unselect();
-    Result instruct(unsigned char instruction);
 
   public:
     MCP2515Handler(int csPin, int resetPin);
@@ -245,7 +244,9 @@ class MCP2515Handler
     int readId(unsigned char n);
     Result loadTXData(unsigned char n, unsigned char* data, unsigned char len);
     unsigned char* readRXData(unsigned char n);
-    Result transmit(bool txb0, bool txb1, bool txb2);
+    Result transmitTXB0();
+    Result transmitTXB1();
+    Result transmitTXB2();
 };
 
 #endif
