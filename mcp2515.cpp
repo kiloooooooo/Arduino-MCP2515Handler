@@ -217,15 +217,15 @@ unsigned char MCP2515Handler::readRegister(Register reg)
  *     ID は TXBnSIDH, TXBnSIDL, TXBnEID8, TXBnEID0 に書き込まれます．
  *   bool isExtended:
  *     拡張データフレームである場合は true を渡します．
- *   int id:
+ *   long id:
  *     アービトレーションID．詳細は下を参照．
  */
-Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
+Result MCP2515Handler::setId(unsigned char n, bool isExtended, long id)
 {
     bool error = false;
     if (isExtended)
     {
-        // int id:
+        // long id:
         // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
         //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
         // ^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =====
@@ -295,7 +295,7 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
     }
     else
     {
-        // int id:
+        // long id:
         // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
         //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
         // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -356,13 +356,13 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, int id)
  *   unsigned char n:
  *     RXBn の ID が読み込まれます．
  */
-int MCP2515Handler::readId(unsigned char n)
+long MCP2515Handler::readId(unsigned char n)
 {
-    int sidh = 0x00;
-    int sidl = 0x00;
-    int eid8 = 0x00;
-    int eid0 = 0x00;
-    int rxId = 0x00000000;
+    long sidh = 0x00;
+    long sidl = 0x00;
+    long eid8 = 0x00;
+    long eid0 = 0x00;
+    long rxId = 0x00000000;
 
     switch (n)
     {
