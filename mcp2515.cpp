@@ -237,7 +237,7 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, long id)
         //                          EID
 
         unsigned char sidh = (id & 0x1FE00000) >> 21;
-        unsigned char sidl = ((id & 0x001C0000) >> 18) + 0x08 + ((id & 0x00030000) >> 16);
+        unsigned char sidl = ((id & 0x001C0000) >> 13) + 0x08 + ((id & 0x00030000) >> 16);
         unsigned char eid8 = (id & 0x0000FF00) >> 8;
         unsigned char eid0 = id & 0x000000FF;
 
