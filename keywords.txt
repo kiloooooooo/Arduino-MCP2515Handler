@@ -25,7 +25,9 @@ setId	KEYWORD2
 readId	KEYWORD2
 loadTXData	KEYWORD2
 readRXData	KEYWORD2
-transmit	KEYWORD2
+transmitTXB0	KEYWORD2
+transmitTXB1	KEYWORD2
+transmitTXB2	KEYWORD2
 
 #######################################
 # Members (KEYWORD3)
