@@ -51,17 +51,7 @@ void MCP2515Handler::unselect()
 Result MCP2515Handler::init()
 {
     this->reset();
-    this->switchMode(Mode::CONFIG);
-
-    unsigned char canstat = this->readRegister(Register::CANSTAT);
-    if ((canstat >> 5) == static_cast<unsigned char>(Mode::CONFIG))
-    {
-        return Result::OK;
-    }
-    else
-    {
-        return Result::FAIL;
-    }
+    return this->switchMode(Mode::CONFIG);
 }
 
 /*
@@ -210,6 +200,240 @@ unsigned char MCP2515Handler::readRegister(Register reg)
 }
 
 /*
+ * TXB0 のアービトレーションIDを設定します．
+ * 
+ * Arguments:
+ *   bool isExtended:
+ *     拡張データフレームである場合は true を渡します．
+ *   long id:
+ *     アービトレーションID．詳細は下を参照．
+ */
+Result MCP2515Handler::setTXB0ID(bool isExtended, long id)
+{
+    bool error = false;
+    if (isExtended)
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =====
+        //  ignore                    SID                   EID
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // =====================================================
+        //                          EID
+
+        unsigned char sidh = (id & 0x1FE00000) >> 21;
+        unsigned char sidl = ((id & 0x001C0000) >> 13) + 0x08 + ((id & 0x00030000) >> 16);
+        unsigned char eid8 = (id & 0x0000FF00) >> 8;
+        unsigned char eid0 = id & 0x000000FF;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+        unsigned char eid8_ = 0x00;
+        unsigned char eid0_ = 0x00;
+
+        this->setRegister(Register::TXB0SIDH, sidh);
+        this->setRegister(Register::TXB0SIDL, sidl);
+        this->setRegister(Register::TXB0EID8, eid8);
+        this->setRegister(Register::TXB0EID0, eid0);
+
+        sidh_ = this->readRegister(Register::TXB0SIDH);
+        sidl_ = this->readRegister(Register::TXB0SIDL);
+        eid8_ = this->readRegister(Register::TXB0EID8);
+        eid0_ = this->readRegister(Register::TXB0EID0);
+
+        error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
+    }
+    else
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        //                       ignore
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        //     ignore                        SID
+
+        unsigned char sidh = id >> 3;
+        unsigned char sidl = (id & 0x00000007) << 5;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+
+        this->setRegister(Register::TXB0SIDH, sidh);
+        this->setRegister(Register::TXB0SIDL, sidl);
+
+        sidh_ = this->readRegister(Register::TXB0SIDH);
+        sidl_ = this->readRegister(Register::TXB0SIDL);
+
+        error = (sidh != sidh_) || (sidl != sidl_);
+    }
+
+    return error ? Result::FAIL : Result::OK;
+}
+
+/*
+ * TXB1 のアービトレーションIDを設定します．
+ * 
+ * Arguments:
+ *   bool isExtended:
+ *     拡張データフレームである場合は true を渡します．
+ *   long id:
+ *     アービトレーションID．詳細は下を参照．
+ */
+Result MCP2515Handler::setTXB1ID(bool isExtended, long id)
+{
+    bool error = false;
+    if (isExtended)
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =====
+        //  ignore                    SID                   EID
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // =====================================================
+        //                          EID
+
+        unsigned char sidh = (id & 0x1FE00000) >> 21;
+        unsigned char sidl = ((id & 0x001C0000) >> 13) + 0x08 + ((id & 0x00030000) >> 16);
+        unsigned char eid8 = (id & 0x0000FF00) >> 8;
+        unsigned char eid0 = id & 0x000000FF;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+        unsigned char eid8_ = 0x00;
+        unsigned char eid0_ = 0x00;
+
+        this->setRegister(Register::TXB1SIDH, sidh);
+        this->setRegister(Register::TXB1SIDL, sidl);
+        this->setRegister(Register::TXB1EID8, eid8);
+        this->setRegister(Register::TXB1EID0, eid0);
+
+        sidh_ = this->readRegister(Register::TXB1SIDH);
+        sidl_ = this->readRegister(Register::TXB1SIDL);
+        eid8_ = this->readRegister(Register::TXB1EID8);
+        eid0_ = this->readRegister(Register::TXB1EID0);
+
+        error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
+    }
+    else
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        //                       ignore
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        //     ignore                        SID
+
+        unsigned char sidh = id >> 3;
+        unsigned char sidl = (id & 0x00000007) << 5;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+
+        this->setRegister(Register::TXB1SIDH, sidh);
+        this->setRegister(Register::TXB1SIDL, sidl);
+
+        sidh_ = this->readRegister(Register::TXB1SIDH);
+        sidl_ = this->readRegister(Register::TXB1SIDL);
+
+        error = (sidh != sidh_) || (sidl != sidl_);
+    }
+
+    return error ? Result::FAIL : Result::OK;
+}
+
+/*
+ * TXB2 のアービトレーションIDを設定します．
+ * 
+ * Arguments:
+ *   bool isExtended:
+ *     拡張データフレームである場合は true を渡します．
+ *   long id:
+ *     アービトレーションID．詳細は下を参照．
+ */
+Result MCP2515Handler::setTXB2ID(bool isExtended, long id)
+{
+    bool error = false;
+    if (isExtended)
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =====
+        //  ignore                    SID                   EID
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // =====================================================
+        //                          EID
+
+        unsigned char sidh = (id & 0x1FE00000) >> 21;
+        unsigned char sidl = ((id & 0x001C0000) >> 13) + 0x08 + ((id & 0x00030000) >> 16);
+        unsigned char eid8 = (id & 0x0000FF00) >> 8;
+        unsigned char eid0 = id & 0x000000FF;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+        unsigned char eid8_ = 0x00;
+        unsigned char eid0_ = 0x00;
+
+        this->setRegister(Register::TXB2SIDH, sidh);
+        this->setRegister(Register::TXB2SIDL, sidl);
+        this->setRegister(Register::TXB2EID8, eid8);
+        this->setRegister(Register::TXB2EID0, eid0);
+
+        sidh_ = this->readRegister(Register::TXB2SIDH);
+        sidl_ = this->readRegister(Register::TXB2SIDL);
+        eid8_ = this->readRegister(Register::TXB2EID8);
+        eid0_ = this->readRegister(Register::TXB2EID0);
+
+        error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
+    }
+    else
+    {
+        // long id:
+        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
+        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        //                       ignore
+
+        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
+        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
+        // ^^^^^^^^^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        //     ignore                        SID
+
+        unsigned char sidh = id >> 3;
+        unsigned char sidl = (id & 0x00000007) << 5;
+
+        unsigned char sidh_ = 0x00;
+        unsigned char sidl_ = 0x00;
+
+        this->setRegister(Register::TXB2SIDH, sidh);
+        this->setRegister(Register::TXB2SIDL, sidl);
+
+        sidh_ = this->readRegister(Register::TXB2SIDH);
+        sidl_ = this->readRegister(Register::TXB2SIDL);
+
+        error = (sidh != sidh_) || (sidl != sidl_);
+    }
+
+    return error ? Result::FAIL : Result::OK;
+}
+
+/*
  * TXBn のアービトレーションIDを設定します．
  * 
  * Arguments:
@@ -350,7 +574,73 @@ Result MCP2515Handler::setId(unsigned char n, bool isExtended, long id)
 }
 
 /*
- * RXBn の ID を読み込みます．
+ * RXB0 のIDを読み込みます．
+ */
+long MCP2515Handler::readRXB0ID()
+{
+    long sidh = 0x00;
+    long sidl = 0x00;
+    long eid8 = 0x00;
+    long eid0 = 0x00;
+    long rxId = 0x00000000;
+
+    sidh = this->readRegister(Register::RXB0SIDH);
+    sidl = this->readRegister(Register::RXB0SIDL);
+    eid8 = this->readRegister(Register::RXB0EID8);
+    eid0 = this->readRegister(Register::RXB0EID0);
+
+    if ((sidl & 0x08) >> 3)
+    {
+        // Extended ID
+        rxId |= sidh << 21;
+        rxId |= ((sidl & 0xE0) << 13);
+        rxId |= ((sidl & 0x03) << 16) + (eid8 << 8) + eid0;
+    }
+    else
+    {
+        // Standard ID
+        rxId |= sidh << 3;
+        rxId |= (sidl & 0xE0) >> 5;
+    }
+
+    return rxId;
+}
+
+/*
+ * RXB1 のIDを読み込みます．
+ */
+long MCP2515Handler::readRXB1ID()
+{
+    long sidh = 0x00;
+    long sidl = 0x00;
+    long eid8 = 0x00;
+    long eid0 = 0x00;
+    long rxId = 0x00000000;
+
+    sidh = this->readRegister(Register::RXB1SIDH);
+    sidl = this->readRegister(Register::RXB1SIDL);
+    eid8 = this->readRegister(Register::RXB1EID8);
+    eid0 = this->readRegister(Register::RXB1EID0);
+
+    if ((sidl & 0x08) >> 3)
+    {
+        // Extended ID
+        rxId |= sidh << 21;
+        rxId |= ((sidl & 0xE0) << 13);
+        rxId |= ((sidl & 0x03) << 16) + (eid8 << 8) + eid0;
+    }
+    else
+    {
+        // Standard ID
+        rxId |= sidh << 3;
+        rxId |= (sidl & 0xE0) >> 5;
+    }
+
+    return rxId;
+}
+
+/*
+ * RXBn のIDを読み込みます．
  * 
  * Arguments:
  *   unsigned char n:
@@ -398,6 +688,90 @@ long MCP2515Handler::readId(unsigned char n)
     }
 
     return rxId;
+}
+
+/*
+ * TXB0Dm にデータを書き込みます．
+ * 
+ * Arguments:
+ *   unsigned char* data:
+ *     書き込むデータ配列．
+ *   unsigned char len:
+ *     data の長さ [Byte]
+ */
+Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
+{
+    bool error = false;
+
+    Register registers[8] = {
+        Register::TXB0D0,
+        Register::TXB0D1,
+        Register::TXB0D2,
+        Register::TXB0D3,
+        Register::TXB0D4,
+        Register::TXB0D5,
+        Register::TXB0D6,
+        Register::TXB0D7};
+
+    this->modRegister(Register::TXB0DLC, 0x0F, len & 0x0F);
+
+    for (int i = 0; i < len; i++)
+    {
+        this->setRegister(registers[i], data[i]);
+    }
+
+    for (int i = 0; i < len; i++)
+    {
+        if (this->readRegister(registers[i]) != data[i])
+        {
+            error = true;
+            break;
+        }
+    }
+
+    return error ? Result::FAIL : Result::OK;
+}
+
+/*
+ * TXB1Dm にデータを書き込みます．
+ * 
+ * Arguments:
+ *   unsigned char* data:
+ *     書き込むデータ配列．
+ *   unsigned char len:
+ *     data の長さ [Byte]
+ */
+Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
+{
+    bool error = false;
+
+    Register registers[8] = {
+        Register::TXB1D0,
+        Register::TXB1D1,
+        Register::TXB1D2,
+        Register::TXB1D3,
+        Register::TXB1D4,
+        Register::TXB1D5,
+        Register::TXB1D6,
+        Register::TXB1D7};
+
+    this->modRegister(Register::TXB1DLC, 0x0F, len & 0x0F);
+
+    for (int i = 0; i < len; i++)
+    {
+        this->setRegister(registers[i], data[i]);
+    }
+
+    for (int i = 0; i < len; i++)
+    {
+        if (this->readRegister(registers[i]) != data[i])
+        {
+            error = true;
+            break;
+        }
+    }
+
+    return error ? Result::FAIL : Result::OK;
 }
 
 /*
@@ -510,7 +884,63 @@ Result MCP2515Handler::loadTXData(unsigned char n, unsigned char *data, unsigned
 }
 
 /*
- * RXBnDm の値を読み込みます．unsigned char の配列が返されますが，
+ * RXB0 を読み込みます．unsigned char の配列が返されますが，
+ * その長さについては別途 RXBnDLC レジスタを参照してください．
+ */
+unsigned char *MCP2515Handler::readRXB0Data()
+{
+    unsigned char dlc = 0x00;
+    unsigned char *data;
+    Register registers[8] = {
+        Register::RXB0D0,
+        Register::RXB0D1,
+        Register::RXB0D2,
+        Register::RXB0D3,
+        Register::RXB0D4,
+        Register::RXB0D5,
+        Register::RXB0D6,
+        Register::RXB0D7,
+    };
+
+    data = new unsigned char[8];
+    for (int i = 0; i < dlc; i++)
+    {
+        data[i] = this->readRegister(registers[i]);
+    }
+
+    return data;
+}
+
+/*
+ * RXB1 を読み込みます．unsigned char の配列が返されますが，
+ * その長さについては別途 RXBnDLC レジスタを参照してください．
+ */
+unsigned char *MCP2515Handler::readRXB0Data()
+{
+    unsigned char dlc = 0x00;
+    unsigned char *data;
+    Register registers[8] = {
+        Register::RXB1D0,
+        Register::RXB1D1,
+        Register::RXB1D2,
+        Register::RXB1D3,
+        Register::RXB1D4,
+        Register::RXB1D5,
+        Register::RXB1D6,
+        Register::RXB1D7,
+    };
+
+    data = new unsigned char[8];
+    for (int i = 0; i < dlc; i++)
+    {
+        data[i] = this->readRegister(registers[i]);
+    }
+
+    return data;
+}
+
+/*
+ * RXBn を読み込みます．unsigned char の配列が返されますが，
  * その長さについては別途 RXBnDLC レジスタを参照してください．
  * 
  * Arguments:
