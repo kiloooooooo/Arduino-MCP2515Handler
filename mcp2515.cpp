@@ -434,146 +434,6 @@ Result MCP2515Handler::setTXB2ID(bool isExtended, long id)
 }
 
 /*
- * TXBn のアービトレーションIDを設定します．
- * 
- * Arguments:
- *   unsigned char n:
- *     ID は TXBnSIDH, TXBnSIDL, TXBnEID8, TXBnEID0 に書き込まれます．
- *   bool isExtended:
- *     拡張データフレームである場合は true を渡します．
- *   long id:
- *     アービトレーションID．詳細は下を参照．
- */
-Result MCP2515Handler::setId(unsigned char n, bool isExtended, long id)
-{
-    bool error = false;
-    if (isExtended)
-    {
-        // long id:
-        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
-        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
-        // ^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =====
-        //  ignore                    SID                   EID
-
-        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
-        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
-        // =====================================================
-        //                          EID
-
-        unsigned char sidh = (id & 0x1FE00000) >> 21;
-        unsigned char sidl = ((id & 0x001C0000) >> 13) + 0x08 + ((id & 0x00030000) >> 16);
-        unsigned char eid8 = (id & 0x0000FF00) >> 8;
-        unsigned char eid0 = id & 0x000000FF;
-
-        unsigned char sidh_ = 0x00;
-        unsigned char sidl_ = 0x00;
-        unsigned char eid8_ = 0x00;
-        unsigned char eid0_ = 0x00;
-
-        switch (n)
-        {
-        case 0:
-            this->setRegister(Register::TXB0SIDH, sidh);
-            this->setRegister(Register::TXB0SIDL, sidl);
-            this->setRegister(Register::TXB0EID8, eid8);
-            this->setRegister(Register::TXB0EID0, eid0);
-
-            sidh_ = this->readRegister(Register::TXB0SIDH);
-            sidl_ = this->readRegister(Register::TXB0SIDL);
-            eid8_ = this->readRegister(Register::TXB0EID8);
-            eid0_ = this->readRegister(Register::TXB0EID0);
-
-            error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
-            break;
-        case 1:
-            this->setRegister(Register::TXB1SIDH, sidh);
-            this->setRegister(Register::TXB1SIDL, sidl);
-            this->setRegister(Register::TXB1EID8, eid8);
-            this->setRegister(Register::TXB1EID0, eid0);
-
-            sidh_ = this->readRegister(Register::TXB1SIDH);
-            sidl_ = this->readRegister(Register::TXB1SIDL);
-            eid8_ = this->readRegister(Register::TXB1EID8);
-            eid0_ = this->readRegister(Register::TXB1EID0);
-
-            error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
-            break;
-        case 2:
-            this->setRegister(Register::TXB2SIDH, sidh);
-            this->setRegister(Register::TXB2SIDL, sidl);
-            this->setRegister(Register::TXB2EID8, eid8);
-            this->setRegister(Register::TXB2EID0, eid0);
-
-            sidh_ = this->readRegister(Register::TXB2SIDH);
-            sidl_ = this->readRegister(Register::TXB2SIDL);
-            eid8_ = this->readRegister(Register::TXB2EID8);
-            eid0_ = this->readRegister(Register::TXB2EID0);
-
-            error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
-            break;
-        default:
-            return Result::INVALID;
-        }
-
-        return error ? Result::FAIL : Result::OK;
-    }
-    else
-    {
-        // long id:
-        // 31 30 29 28   27 26 25 24   23 22 21 20   19 18 17 16
-        //  0  0  0  x    x  x  x  x    x  x  x  x    x  x  x  x
-        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        //                       ignore
-
-        // 15 14 13 12   11 10  9  8    7  6  5  4    3  2  1  0
-        //  x  x  x  x    x  x  x  x    x  x  x  x    x  x  x  x
-        // ^^^^^^^^^^^^^^^^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        //     ignore                        SID
-
-        unsigned char sidh = id >> 3;
-        unsigned char sidl = (id & 0x00000007) << 5;
-
-        unsigned char sidh_ = 0x00;
-        unsigned char sidl_ = 0x00;
-
-        switch (n)
-        {
-        case 0:
-            this->setRegister(Register::TXB0SIDH, sidh);
-            this->setRegister(Register::TXB0SIDL, sidl);
-
-            sidh_ = this->readRegister(Register::TXB0SIDH);
-            sidl_ = this->readRegister(Register::TXB0SIDL);
-
-            error = (sidh != sidh_) || (sidl != sidl_);
-            break;
-        case 1:
-            this->setRegister(Register::TXB1SIDH, sidh);
-            this->setRegister(Register::TXB1SIDL, sidl);
-
-            sidh_ = this->readRegister(Register::TXB1SIDH);
-            sidl_ = this->readRegister(Register::TXB1SIDL);
-
-            error = (sidh != sidh_) || (sidl != sidl_);
-            break;
-        case 2:
-            this->setRegister(Register::TXB2SIDH, sidh);
-            this->setRegister(Register::TXB2SIDL, sidl);
-
-            sidh_ = this->readRegister(Register::TXB2SIDH);
-            sidl_ = this->readRegister(Register::TXB2SIDL);
-
-            error = (sidh != sidh_) || (sidl != sidl_);
-            break;
-        default:
-            return Result::INVALID;
-        }
-    }
-
-    return error ? Result::FAIL : Result::OK;
-}
-
-/*
  * RXB0 のIDを読み込みます．
  */
 long MCP2515Handler::readRXB0ID()
@@ -621,57 +481,6 @@ long MCP2515Handler::readRXB1ID()
     sidl = this->readRegister(Register::RXB1SIDL);
     eid8 = this->readRegister(Register::RXB1EID8);
     eid0 = this->readRegister(Register::RXB1EID0);
-
-    if ((sidl & 0x08) >> 3)
-    {
-        // Extended ID
-        rxId |= sidh << 21;
-        rxId |= ((sidl & 0xE0) << 13);
-        rxId |= ((sidl & 0x03) << 16) + (eid8 << 8) + eid0;
-    }
-    else
-    {
-        // Standard ID
-        rxId |= sidh << 3;
-        rxId |= (sidl & 0xE0) >> 5;
-    }
-
-    return rxId;
-}
-
-/*
- * RXBn のIDを読み込みます．
- * 
- * Arguments:
- *   unsigned char n:
- *     RXBn の ID が読み込まれます．
- */
-long MCP2515Handler::readId(unsigned char n)
-{
-    long sidh = 0x00;
-    long sidl = 0x00;
-    long eid8 = 0x00;
-    long eid0 = 0x00;
-    long rxId = 0x00000000;
-
-    switch (n)
-    {
-    case 0:
-        sidh = this->readRegister(Register::RXB0SIDH);
-        sidl = this->readRegister(Register::RXB0SIDL);
-        eid8 = this->readRegister(Register::RXB0EID8);
-        eid0 = this->readRegister(Register::RXB0EID0);
-        break;
-    case 1:
-        sidh = this->readRegister(Register::RXB1SIDH);
-        sidl = this->readRegister(Register::RXB1SIDL);
-        eid8 = this->readRegister(Register::RXB1EID8);
-        eid0 = this->readRegister(Register::RXB1EID0);
-        break;
-    default:
-        return -1;
-        break;
-    }
 
     if ((sidl & 0x08) >> 3)
     {
@@ -817,229 +626,47 @@ Result MCP2515Handler::loadTXB2Data(unsigned char *data, unsigned char len)
 }
 
 /*
- * TXBnDm にデータを書き込みます．
- * 
- * Arguments:
- *   unsigned char n:
- *     データは TXBnD0, TXBnD1, ..., TXBnD7 に書き込まれます．
- *   unsigned char* data:
- *     書き込むデータ配列．
- *   unsigned char len:
- *     data の長さ [Byte]
- */
-Result MCP2515Handler::loadTXData(unsigned char n, unsigned char *data, unsigned char len)
-{
-    bool error = false;
-    Register *registers;
-
-    switch (n)
-    {
-    case 0:
-        registers = new Register[8]{
-            Register::TXB0D0,
-            Register::TXB0D1,
-            Register::TXB0D2,
-            Register::TXB0D3,
-            Register::TXB0D4,
-            Register::TXB0D5,
-            Register::TXB0D6,
-            Register::TXB0D7};
-
-        this->modRegister(Register::TXB0DLC, 0x0F, len & 0x0F);
-
-        for (int i = 0; i < len; i++)
-        {
-            this->setRegister(registers[i], data[i]);
-        }
-
-        for (int i = 0; i < len; i++)
-        {
-            if (this->readRegister(registers[i]) != data[i])
-            {
-                error = true;
-                break;
-            }
-        }
-
-        break;
-    case 1:
-        registers = new Register[8]{
-            Register::TXB1D0,
-            Register::TXB1D1,
-            Register::TXB1D2,
-            Register::TXB1D3,
-            Register::TXB1D4,
-            Register::TXB1D5,
-            Register::TXB1D6,
-            Register::TXB1D7};
-
-        this->modRegister(Register::TXB1DLC, 0x0F, len & 0x0F);
-
-        for (int i = 0; i < len; i++)
-        {
-            this->setRegister(registers[i], data[i]);
-        }
-
-        for (int i = 0; i < len; i++)
-        {
-            if (this->readRegister(registers[i]) != data[i])
-            {
-                error = true;
-                break;
-            }
-        }
-
-        break;
-    case 2:
-        registers = new Register[8]{
-            Register::TXB2D0,
-            Register::TXB2D1,
-            Register::TXB2D2,
-            Register::TXB2D3,
-            Register::TXB2D4,
-            Register::TXB2D5,
-            Register::TXB2D6,
-            Register::TXB2D7};
-
-        this->modRegister(Register::TXB2DLC, 0x0F, len & 0x0F);
-
-        for (int i = 0; i < len; i++)
-        {
-            this->setRegister(registers[i], data[i]);
-        }
-
-        for (int i = 0; i < len; i++)
-        {
-            if (this->readRegister(registers[i]) != data[i])
-            {
-                error = true;
-                break;
-            }
-        }
-
-        break;
-    default:
-        return Result::INVALID;
-    }
-
-    return error ? Result::FAIL : Result::OK;
-}
-
-/*
- * RXB0 を読み込みます．unsigned char の配列が返されますが，
+ * RXB0 を読み込みます．unsigned char の配列(長さ8)が返されますが，
  * その長さについては別途 RXBnDLC レジスタを参照してください．
+ * また読み込み後の CANINTF.RXB0IF のクリアは不要です．
+ * 
+ * Returns:
+ *   読み込んだデータ
  */
 unsigned char *MCP2515Handler::readRXB0Data()
 {
-    unsigned char dlc = 0x00;
-    unsigned char *data;
-    Register registers[8] = {
-        Register::RXB0D0,
-        Register::RXB0D1,
-        Register::RXB0D2,
-        Register::RXB0D3,
-        Register::RXB0D4,
-        Register::RXB0D5,
-        Register::RXB0D6,
-        Register::RXB0D7,
-    };
+    unsigned char data[8];
 
-    data = new unsigned char[8];
-    for (int i = 0; i < dlc; i++)
-    {
-        data[i] = this->readRegister(registers[i]);
-    }
+    SPI.beginTransaction(mcpSpiSettings);
+    this->select();
+    SPI.transfer(Instruction::READ_RX_BUFFER_RXB0D0);
+    for (int byte = 0; byte < 8; byte++)
+        data[byte] = SPI.transfer(0);
+    this.unselect();
+    SPI.endTransaction();
 
     return data;
 }
 
 /*
- * RXB1 を読み込みます．unsigned char の配列が返されますが，
+ * RXB1 を読み込みます．unsigned char の配列(長さ8)が返されますが，
  * その長さについては別途 RXBnDLC レジスタを参照してください．
+ * また読み込み後の CANINTF.RXB1IF のクリアは不要です．
+ * 
+ * Returns:
+ *   読み込んだデータ
  */
 unsigned char *MCP2515Handler::readRXB1Data()
 {
-    unsigned char dlc = 0x00;
-    unsigned char *data;
-    Register registers[8] = {
-        Register::RXB1D0,
-        Register::RXB1D1,
-        Register::RXB1D2,
-        Register::RXB1D3,
-        Register::RXB1D4,
-        Register::RXB1D5,
-        Register::RXB1D6,
-        Register::RXB1D7,
-    };
+    unsigned char data[8];
 
-    data = new unsigned char[8];
-    for (int i = 0; i < dlc; i++)
-    {
-        data[i] = this->readRegister(registers[i]);
-    }
-
-    return data;
-}
-
-/*
- * RXBn を読み込みます．unsigned char の配列が返されますが，
- * その長さについては別途 RXBnDLC レジスタを参照してください．
- * 
- * Arguments:
- *   unsigned char n:
- *     RXBnD0, RXBnD1, ..., RXBnDk の値を読み込みます．(k = DLC)
- */
-unsigned char *MCP2515Handler::readRXData(unsigned char n)
-{
-    unsigned char dlc = 0x00;
-    unsigned char *data;
-    Register *registers;
-    switch (n)
-    {
-    case 0:
-        dlc = this->readRegister(Register::RXB0DLC) & 0x0F;
-
-        registers = new Register[8]{
-            Register::RXB0D0,
-            Register::RXB0D1,
-            Register::RXB0D2,
-            Register::RXB0D3,
-            Register::RXB0D4,
-            Register::RXB0D5,
-            Register::RXB0D6,
-            Register::RXB0D7,
-        };
-
-        data = new unsigned char[8];
-        for (int i = 0; i < dlc; i++)
-        {
-            data[i] = this->readRegister(registers[i]);
-        }
-        break;
-    case 1:
-        dlc = this->readRegister(Register::RXB0DLC) & 0x0F;
-
-        registers = new Register[8]{
-            Register::RXB1D0,
-            Register::RXB1D1,
-            Register::RXB1D2,
-            Register::RXB1D3,
-            Register::RXB1D4,
-            Register::RXB1D5,
-            Register::RXB1D6,
-            Register::RXB1D7,
-        };
-
-        data = new unsigned char[8];
-        for (int i = 0; i < dlc; i++)
-        {
-            data[i] = this->readRegister(registers[i]);
-        }
-        break;
-    default:
-        return NULL;
-        break;
-    }
+    SPI.beginTransaction(mcpSpiSettings);
+    this->select();
+    SPI.transfer(Instruction::READ_RX_BUFFER_RXB1D0);
+    for (int byte = 0; byte < 8; byte++)
+        data[byte] = SPI.transfer(0);
+    this.unselect();
+    SPI.endTransaction();
 
     return data;
 }
@@ -1048,7 +675,7 @@ unsigned char *MCP2515Handler::readRXData(unsigned char n)
  * TXバッファ0に対する送信要求(RTS)命令を送信します．
  * 
  * Returns:
- *     Result::OK または Result::FAIL
+ *     Result
  */
 Result MCP2515Handler::transmitTXB0()
 {
@@ -1060,7 +687,7 @@ Result MCP2515Handler::transmitTXB0()
  * TXバッファ1に対する送信要求(RTS)命令を送信します．
  * 
  * Returns:
- *     Result::OK または Result::FAIL
+ *     Result
  */
 Result MCP2515Handler::transmitTXB1()
 {
@@ -1072,7 +699,7 @@ Result MCP2515Handler::transmitTXB1()
  * TXバッファ2に対する送信要求(RTS)命令を送信します．
  * 
  * Returns:
- *     Result::OK または Result::FAIL
+ *     Result
  */
 Result MCP2515Handler::transmitTXB2()
 {
