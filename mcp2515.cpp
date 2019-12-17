@@ -78,7 +78,8 @@ Result MCP2515Handler::switchMode(const Mode mode)
     unsigned char canctrl = static_cast<unsigned char>(mode) << 5;
     this->modRegister(Register::CANCTRL, 0xE0, canctrl);
 
-    unsigned char canstat = this->readRegister(Register::CANSTAT);
+    unsigned char canstat;
+    this->readRegister(Register::CANSTAT, &canstat);
 
     if ((canstat >> 5) == static_cast<unsigned char>(mode))
     {
@@ -247,10 +248,10 @@ Result MCP2515Handler::setTXB0ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB0EID8, eid8);
         this->setRegister(Register::TXB0EID0, eid0);
 
-        sidh_ = this->readRegister(Register::TXB0SIDH);
-        sidl_ = this->readRegister(Register::TXB0SIDL);
-        eid8_ = this->readRegister(Register::TXB0EID8);
-        eid0_ = this->readRegister(Register::TXB0EID0);
+        this->readRegister(Register::TXB0SIDH, &sidh_);
+        this->readRegister(Register::TXB0SIDL, &sidl_);
+        this->readRegister(Register::TXB0EID8, &eid8_);
+        this->readRegister(Register::TXB0EID0, &eid0_);
 
         error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
     }
@@ -276,8 +277,8 @@ Result MCP2515Handler::setTXB0ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB0SIDH, sidh);
         this->setRegister(Register::TXB0SIDL, sidl);
 
-        sidh_ = this->readRegister(Register::TXB0SIDH);
-        sidl_ = this->readRegister(Register::TXB0SIDL);
+        this->readRegister(Register::TXB0SIDH, &sidh_);
+        this->readRegister(Register::TXB0SIDL, &sidl_);
 
         error = (sidh != sidh_) || (sidl != sidl_);
     }
@@ -328,10 +329,10 @@ Result MCP2515Handler::setTXB1ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB1EID8, eid8);
         this->setRegister(Register::TXB1EID0, eid0);
 
-        sidh_ = this->readRegister(Register::TXB1SIDH);
-        sidl_ = this->readRegister(Register::TXB1SIDL);
-        eid8_ = this->readRegister(Register::TXB1EID8);
-        eid0_ = this->readRegister(Register::TXB1EID0);
+        this->readRegister(Register::TXB1SIDH, &sidh_);
+        this->readRegister(Register::TXB1SIDL, &sidl_);
+        this->readRegister(Register::TXB1EID8, &eid8_);
+        this->readRegister(Register::TXB1EID0, &eid0_);
 
         error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
     }
@@ -357,8 +358,8 @@ Result MCP2515Handler::setTXB1ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB1SIDH, sidh);
         this->setRegister(Register::TXB1SIDL, sidl);
 
-        sidh_ = this->readRegister(Register::TXB1SIDH);
-        sidl_ = this->readRegister(Register::TXB1SIDL);
+        this->readRegister(Register::TXB1SIDH, &sidh_);
+        this->readRegister(Register::TXB1SIDL, &sidl_);
 
         error = (sidh != sidh_) || (sidl != sidl_);
     }
@@ -409,10 +410,10 @@ Result MCP2515Handler::setTXB2ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB2EID8, eid8);
         this->setRegister(Register::TXB2EID0, eid0);
 
-        sidh_ = this->readRegister(Register::TXB2SIDH);
-        sidl_ = this->readRegister(Register::TXB2SIDL);
-        eid8_ = this->readRegister(Register::TXB2EID8);
-        eid0_ = this->readRegister(Register::TXB2EID0);
+        this->readRegister(Register::TXB2SIDH, &sidh_);
+        this->readRegister(Register::TXB2SIDL, &sidl_);
+        this->readRegister(Register::TXB2EID8, &eid8_);
+        this->readRegister(Register::TXB2EID0, &eid0_);
 
         error = (sidh != sidh_) || (sidl != sidl_) || (eid8 != eid8_) || (eid0 != eid0_);
     }
@@ -438,8 +439,8 @@ Result MCP2515Handler::setTXB2ID(const bool isExtended, const long id)
         this->setRegister(Register::TXB2SIDH, sidh);
         this->setRegister(Register::TXB2SIDL, sidl);
 
-        sidh_ = this->readRegister(Register::TXB2SIDH);
-        sidl_ = this->readRegister(Register::TXB2SIDL);
+        this->readRegister(Register::TXB2SIDH, &sidh_);
+        this->readRegister(Register::TXB2SIDL, &sidl_);
 
         error = (sidh != sidh_) || (sidl != sidl_);
     }
@@ -461,10 +462,10 @@ Result MCP2515Handler::readRXB0ID(long *id)
     long eid0 = 0x00;
     long rxId = 0x00000000;
 
-    sidh = this->readRegister(Register::RXB0SIDH);
-    sidl = this->readRegister(Register::RXB0SIDL);
-    eid8 = this->readRegister(Register::RXB0EID8);
-    eid0 = this->readRegister(Register::RXB0EID0);
+    this->readRegister(Register::RXB0SIDH, &sidh);
+    this->readRegister(Register::RXB0SIDL, &sidl);
+    this->readRegister(Register::RXB0EID8, &eid8);
+    this->readRegister(Register::RXB0EID0, &eid0);
 
     if ((sidl & 0x08) >> 3)
     {
@@ -499,10 +500,10 @@ Result MCP2515Handler::readRXB1ID(long *id)
     long eid0 = 0x00;
     long rxId = 0x00000000;
 
-    sidh = this->readRegister(Register::RXB1SIDH);
-    sidl = this->readRegister(Register::RXB1SIDL);
-    eid8 = this->readRegister(Register::RXB1EID8);
-    eid0 = this->readRegister(Register::RXB1EID0);
+    this->readRegister(Register::RXB1SIDH, &sidh);
+    this->readRegister(Register::RXB1SIDL, &sidl);
+    this->readRegister(Register::RXB1EID8, &eid8);
+    this->readRegister(Register::RXB1EID0, &eid0);
 
     if ((sidl & 0x08) >> 3)
     {
