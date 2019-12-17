@@ -741,7 +741,7 @@ Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
  *   unsigned char len:
  *     data の長さ [Byte]
  */
-Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
+Result MCP2515Handler::loadTXB1Data(unsigned char *data, unsigned char len)
 {
     bool error = false;
 
@@ -756,6 +756,48 @@ Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
         Register::TXB1D7};
 
     this->modRegister(Register::TXB1DLC, 0x0F, len & 0x0F);
+
+    for (int i = 0; i < len; i++)
+    {
+        this->setRegister(registers[i], data[i]);
+    }
+
+    for (int i = 0; i < len; i++)
+    {
+        if (this->readRegister(registers[i]) != data[i])
+        {
+            error = true;
+            break;
+        }
+    }
+
+    return error ? Result::FAIL : Result::OK;
+}
+
+/*
+ * TXB2Dm にデータを書き込みます．
+ * 
+ * Arguments:
+ *   unsigned char* data:
+ *     書き込むデータ配列．
+ *   unsigned char len:
+ *     data の長さ [Byte]
+ */
+Result MCP2515Handler::loadTXB2Data(unsigned char *data, unsigned char len)
+{
+    bool error = false;
+
+    Register registers[8] = {
+        Register::TXB2D0,
+        Register::TXB2D1,
+        Register::TXB2D2,
+        Register::TXB2D3,
+        Register::TXB2D4,
+        Register::TXB2D5,
+        Register::TXB2D6,
+        Register::TXB2D7};
+
+    this->modRegister(Register::TXB2DLC, 0x0F, len & 0x0F);
 
     for (int i = 0; i < len; i++)
     {
