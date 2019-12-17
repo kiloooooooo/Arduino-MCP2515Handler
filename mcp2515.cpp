@@ -957,7 +957,7 @@ unsigned char *MCP2515Handler::readRXB0Data()
  * RXB1 を読み込みます．unsigned char の配列が返されますが，
  * その長さについては別途 RXBnDLC レジスタを参照してください．
  */
-unsigned char *MCP2515Handler::readRXB0Data()
+unsigned char *MCP2515Handler::readRXB1Data()
 {
     unsigned char dlc = 0x00;
     unsigned char *data;
