@@ -245,11 +245,11 @@ public:
     Result setTXB2ID(const bool isExtended, const long id);
     Result readRXB0ID(long int *id);
     Result readRXB1ID(long int *id);
-    Result loadTXB0Data(unsigned char *data, unsigned char len);
-    Result loadTXB1Data(unsigned char *data, unsigned char len);
-    Result loadTXB2Data(unsigned char *data, unsigned char len);
-    Result readRXB0Data(unsigned char *data);
-    Result readRXB1Data(unsigned char *data);
+    Result loadTXB0Data(const unsigned char data[], const unsigned char len);
+    Result loadTXB1Data(const unsigned char data[], const unsigned char len);
+    Result loadTXB2Data(const unsigned char data[], const unsigned char len);
+    Result readRXB0Data(unsigned char data[]);
+    Result readRXB1Data(unsigned char data[]);
     Result readRXB0(long int *id, unsigned char *data);
     Result readRXB1(long int *id, unsigned char *data);
     Result transmitTXB0();

@@ -458,16 +458,21 @@ Result MCP2515Handler::setTXB2ID(const bool isExtended, const long id)
  */
 Result MCP2515Handler::readRXB0ID(long int *id)
 {
-    long sidh = 0x00;
-    long sidl = 0x00;
-    long eid8 = 0x00;
-    long eid0 = 0x00;
+    unsigned char sidh_;
+    unsigned char sidl_;
+    unsigned char eid8_;
+    unsigned char eid0_;
+
+    long sidh = 0x00000000;
+    long sidl = 0x00000000;
+    long eid8 = 0x00000000;
+    long eid0 = 0x00000000;
     long rxId = 0x00000000;
 
-    this->readRegister(Register::RXB0SIDH, &sidh);
-    this->readRegister(Register::RXB0SIDL, &sidl);
-    this->readRegister(Register::RXB0EID8, &eid8);
-    this->readRegister(Register::RXB0EID0, &eid0);
+    this->readRegister(Register::RXB0SIDH, &sidh_);
+    this->readRegister(Register::RXB0SIDL, &sidl_);
+    this->readRegister(Register::RXB0EID8, &eid8_);
+    this->readRegister(Register::RXB0EID0, &eid0_);
 
     if ((sidl & 0x08) >> 3)
     {
@@ -496,16 +501,21 @@ Result MCP2515Handler::readRXB0ID(long int *id)
  */
 Result MCP2515Handler::readRXB1ID(long int *id)
 {
-    long sidh = 0x00;
-    long sidl = 0x00;
-    long eid8 = 0x00;
-    long eid0 = 0x00;
+    unsigned char sidh_;
+    unsigned char sidl_;
+    unsigned char eid8_;
+    unsigned char eid0_;
+
+    long sidh = 0x00000000;
+    long sidl = 0x00000000;
+    long eid8 = 0x00000000;
+    long eid0 = 0x00000000;
     long rxId = 0x00000000;
 
-    this->readRegister(Register::RXB1SIDH, &sidh);
-    this->readRegister(Register::RXB1SIDL, &sidl);
-    this->readRegister(Register::RXB1EID8, &eid8);
-    this->readRegister(Register::RXB1EID0, &eid0);
+    this->readRegister(Register::RXB1SIDH, &sidh_);
+    this->readRegister(Register::RXB1SIDL, &sidl_);
+    this->readRegister(Register::RXB1EID8, &eid8_);
+    this->readRegister(Register::RXB1EID0, &eid0_);
 
     if ((sidl & 0x08) >> 3)
     {
@@ -673,9 +683,8 @@ Result MCP2515Handler::loadTXB2Data(const unsigned char data[], const unsigned c
  * Returns:
  *   Result
  */
-Result MCP2515Handler::readRXB0Data(unsigned char *data)
+Result MCP2515Handler::readRXB0Data(unsigned char data[])
 {
-    unsigned char data[8];
     unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB0D0);
 
     SPI.beginTransaction(mcpSpiSettings);
@@ -683,7 +692,7 @@ Result MCP2515Handler::readRXB0Data(unsigned char *data)
     SPI.transfer(instruction);
     for (int byte = 0; byte < 8; byte++)
         data[byte] = SPI.transfer(0);
-    this.unselect();
+    this->unselect();
     SPI.endTransaction();
 
     return Result::OK;
@@ -701,9 +710,8 @@ Result MCP2515Handler::readRXB0Data(unsigned char *data)
  * Returns:
  *   Result
  */
-Result MCP2515Handler::readRXB1Data(unsigned char *data)
+Result MCP2515Handler::readRXB1Data(unsigned char data[])
 {
-    unsigned char data[8];
     unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB1D0);
 
     SPI.beginTransaction(mcpSpiSettings);
@@ -711,7 +719,7 @@ Result MCP2515Handler::readRXB1Data(unsigned char *data)
     SPI.transfer(instruction);
     for (int byte = 0; byte < 8; byte++)
         data[byte] = SPI.transfer(0);
-    this.unselect();
+    this->unselect();
     SPI.endTransaction();
 
     return Result::OK;
