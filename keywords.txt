@@ -24,6 +24,8 @@ readRegister	KEYWORD2
 setId	KEYWORD2
 readId	KEYWORD2
 loadTXData	KEYWORD2
+loadTXB0Data    KEYWORD2
+loadTXB1Data    KEYWORD2
 readRXData	KEYWORD2
 transmitTXB0	KEYWORD2
 transmitTXB1	KEYWORD2
