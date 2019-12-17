@@ -456,7 +456,7 @@ Result MCP2515Handler::setTXB2ID(const bool isExtended, const long id)
  * Returns:
  *   Result
  */
-Result MCP2515Handler::readRXB0ID(long *id)
+Result MCP2515Handler::readRXB0ID(long int *id)
 {
     long sidh = 0x00;
     long sidl = 0x00;
@@ -494,7 +494,7 @@ Result MCP2515Handler::readRXB0ID(long *id)
  * Returns:
  *   Result
  */
-Result MCP2515Handler::readRXB1ID(long *id)
+Result MCP2515Handler::readRXB1ID(long int *id)
 {
     long sidh = 0x00;
     long sidl = 0x00;
