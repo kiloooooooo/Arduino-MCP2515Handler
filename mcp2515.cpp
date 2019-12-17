@@ -128,7 +128,8 @@ Result MCP2515Handler::setRegister(const Register reg, const unsigned char data)
     this->unselect();
     SPI.endTransaction();
 
-    unsigned char regData = this->readRegister(reg);
+    unsigned char regData;
+    this->readRegister(reg, &regData);
     if (data == regData)
     {
         return Result::OK;
@@ -169,7 +170,8 @@ Result MCP2515Handler::modRegister(const Register reg, const unsigned char mask,
     this->unselect();
     SPI.endTransaction();
 
-    unsigned char regData = this->readRegister(reg);
+    unsigned char regData;
+    this->readRegister(reg, &regData);
     if (data == regData)
     {
         return Result::OK;
