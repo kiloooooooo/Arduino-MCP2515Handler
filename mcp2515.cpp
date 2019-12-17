@@ -12,7 +12,7 @@ SPISettings mcpSpiSettings(10000000, MSBFIRST, SPI_MODE0);
  *   int resetPin:
  *     リセットピン番号．
  */
-MCP2515Handler::MCP2515Handler(int csPin, int resetPin)
+MCP2515Handler::MCP2515Handler(const int csPin, const int resetPin)
 {
     this->csPin = csPin;
     this->resetPin = resetPin;
@@ -73,7 +73,7 @@ Result MCP2515Handler::reset()
  *   Mode mode:
  *     新しい動作モード．
  */
-Result MCP2515Handler::switchMode(Mode mode)
+Result MCP2515Handler::switchMode(const Mode mode)
 {
     unsigned char canctrl = static_cast<unsigned char>(mode) << 5;
     this->modRegister(Register::CANCTRL, 0xE0, canctrl);
@@ -97,7 +97,7 @@ Result MCP2515Handler::switchMode(Mode mode)
  *   Instruction instruction:
  *     送信する命令．
  */
-Result MCP2515Handler::instruct(Instruction instruction)
+Result MCP2515Handler::instruct(const Instruction instruction)
 {
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
@@ -117,7 +117,7 @@ Result MCP2515Handler::instruct(Instruction instruction)
  *   unsigned char data:
  *     データバイト．
  */
-Result MCP2515Handler::setRegister(Register reg, unsigned char data)
+Result MCP2515Handler::setRegister(const Register reg, const unsigned char data)
 {
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
@@ -157,7 +157,7 @@ Result MCP2515Handler::setRegister(Register reg, unsigned char data)
  *     -------+-----------------
  *     after  | 0 1 1 0 0 0 0 1
  */
-Result MCP2515Handler::modRegister(Register reg, unsigned char mask, unsigned char data)
+Result MCP2515Handler::modRegister(const Register reg, const unsigned char mask, const unsigned char data)
 {
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
@@ -185,8 +185,11 @@ Result MCP2515Handler::modRegister(Register reg, unsigned char mask, unsigned ch
  * Arguments:
  *   Register reg:
  *     読み込むレジスタ．
+ * 
+ * Returns:
+ *   Result
  */
-unsigned char MCP2515Handler::readRegister(Register reg)
+Result MCP2515Handler::readRegister(const Register reg, unsigned char *data)
 {
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
@@ -196,7 +199,9 @@ unsigned char MCP2515Handler::readRegister(Register reg)
     this->unselect();
     SPI.endTransaction();
 
-    return output;
+    *data = output;
+
+    return Result::OK;
 }
 
 /*
@@ -207,8 +212,11 @@ unsigned char MCP2515Handler::readRegister(Register reg)
  *     拡張データフレームである場合は true を渡します．
  *   long id:
  *     アービトレーションID．詳細は下を参照．
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::setTXB0ID(bool isExtended, long id)
+Result MCP2515Handler::setTXB0ID(const bool isExtended, const long id)
 {
     bool error = false;
     if (isExtended)
@@ -285,8 +293,11 @@ Result MCP2515Handler::setTXB0ID(bool isExtended, long id)
  *     拡張データフレームである場合は true を渡します．
  *   long id:
  *     アービトレーションID．詳細は下を参照．
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::setTXB1ID(bool isExtended, long id)
+Result MCP2515Handler::setTXB1ID(const bool isExtended, const long id)
 {
     bool error = false;
     if (isExtended)
@@ -363,8 +374,11 @@ Result MCP2515Handler::setTXB1ID(bool isExtended, long id)
  *     拡張データフレームである場合は true を渡します．
  *   long id:
  *     アービトレーションID．詳細は下を参照．
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::setTXB2ID(bool isExtended, long id)
+Result MCP2515Handler::setTXB2ID(const bool isExtended, const long id)
 {
     bool error = false;
     if (isExtended)
@@ -435,8 +449,11 @@ Result MCP2515Handler::setTXB2ID(bool isExtended, long id)
 
 /*
  * RXB0 のIDを読み込みます．
+ * 
+ * Returns:
+ *   Result
  */
-long MCP2515Handler::readRXB0ID()
+Result MCP2515Handler::readRXB0ID(long *id)
 {
     long sidh = 0x00;
     long sidl = 0x00;
@@ -463,13 +480,18 @@ long MCP2515Handler::readRXB0ID()
         rxId |= (sidl & 0xE0) >> 5;
     }
 
-    return rxId;
+    *id = rxId;
+
+    return Result::OK;
 }
 
 /*
  * RXB1 のIDを読み込みます．
+ * 
+ * Returns:
+ *   Result
  */
-long MCP2515Handler::readRXB1ID()
+Result MCP2515Handler::readRXB1ID(long *id)
 {
     long sidh = 0x00;
     long sidl = 0x00;
@@ -496,19 +518,24 @@ long MCP2515Handler::readRXB1ID()
         rxId |= (sidl & 0xE0) >> 5;
     }
 
-    return rxId;
+    *id = rxId;
+
+    return Result::OK;
 }
 
 /*
  * TXB0Dm にデータを書き込みます．
  * 
  * Arguments:
- *   unsigned char* data:
+ *   unsigned char data[]:
  *     書き込むデータ配列．
  *   unsigned char len:
  *     data の長さ [Byte]
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
+Result MCP2515Handler::loadTXB0Data(const unsigned char data[], const unsigned char len)
 {
     bool error = false;
 
@@ -545,12 +572,15 @@ Result MCP2515Handler::loadTXB0Data(unsigned char *data, unsigned char len)
  * TXB1Dm にデータを書き込みます．
  * 
  * Arguments:
- *   unsigned char* data:
+ *   unsigned char data[]:
  *     書き込むデータ配列．
  *   unsigned char len:
  *     data の長さ [Byte]
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::loadTXB1Data(unsigned char *data, unsigned char len)
+Result MCP2515Handler::loadTXB1Data(const unsigned char data[], const unsigned char len)
 {
     bool error = false;
 
@@ -587,12 +617,15 @@ Result MCP2515Handler::loadTXB1Data(unsigned char *data, unsigned char len)
  * TXB2Dm にデータを書き込みます．
  * 
  * Arguments:
- *   unsigned char* data:
+ *   unsigned char data[]:
  *     書き込むデータ配列．
  *   unsigned char len:
  *     data の長さ [Byte]
+ * 
+ * Returns:
+ *   Result
  */
-Result MCP2515Handler::loadTXB2Data(unsigned char *data, unsigned char len)
+Result MCP2515Handler::loadTXB2Data(const unsigned char data[], const unsigned char len)
 {
     bool error = false;
 
@@ -630,10 +663,14 @@ Result MCP2515Handler::loadTXB2Data(unsigned char *data, unsigned char len)
  * その長さについては別途 RXBnDLC レジスタを参照してください．
  * また読み込み後の CANINTF.RXB0IF のクリアは不要です．
  * 
+ * Arguments:
+ *   unsigned char *data:
+ *     読み込んだデータを格納する変数へのポインタ
+ * 
  * Returns:
- *   読み込んだデータ
+ *   Result
  */
-unsigned char *MCP2515Handler::readRXB0Data()
+Result MCP2515Handler::readRXB0Data(unsigned char *data)
 {
     unsigned char data[8];
     unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB0D0);
@@ -654,10 +691,14 @@ unsigned char *MCP2515Handler::readRXB0Data()
  * その長さについては別途 RXBnDLC レジスタを参照してください．
  * また読み込み後の CANINTF.RXB1IF のクリアは不要です．
  * 
+ * Arguments:
+ *   unsigned char *data:
+ *     読み込んだデータを格納する変数へのポインタ
+ * 
  * Returns:
- *   読み込んだデータ
+ *   Result
  */
-unsigned char *MCP2515Handler::readRXB1Data()
+Result MCP2515Handler::readRXB1Data(unsigned char *data)
 {
     unsigned char data[8];
     unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB1D0);
