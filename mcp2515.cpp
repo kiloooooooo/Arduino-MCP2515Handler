@@ -683,7 +683,7 @@ Result MCP2515Handler::readRXB0Data(unsigned char *data)
     this.unselect();
     SPI.endTransaction();
 
-    return data;
+    return Result::OK;
 }
 
 /*
@@ -711,7 +711,7 @@ Result MCP2515Handler::readRXB1Data(unsigned char *data)
     this.unselect();
     SPI.endTransaction();
 
-    return data;
+    return Result::OK;
 }
 
 /*
