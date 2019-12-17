@@ -636,10 +636,11 @@ Result MCP2515Handler::loadTXB2Data(unsigned char *data, unsigned char len)
 unsigned char *MCP2515Handler::readRXB0Data()
 {
     unsigned char data[8];
+    unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB0D0);
 
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
-    SPI.transfer(Instruction::READ_RX_BUFFER_RXB0D0);
+    SPI.transfer(instruction);
     for (int byte = 0; byte < 8; byte++)
         data[byte] = SPI.transfer(0);
     this.unselect();
@@ -659,10 +660,11 @@ unsigned char *MCP2515Handler::readRXB0Data()
 unsigned char *MCP2515Handler::readRXB1Data()
 {
     unsigned char data[8];
+    unsigned char instruction = static_cast<unsigned char>(Instruction::READ_RX_BUFFER_RXB1D0);
 
     SPI.beginTransaction(mcpSpiSettings);
     this->select();
-    SPI.transfer(Instruction::READ_RX_BUFFER_RXB1D0);
+    SPI.transfer(instruction);
     for (int byte = 0; byte < 8; byte++)
         data[byte] = SPI.transfer(0);
     this.unselect();
