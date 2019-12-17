@@ -571,7 +571,9 @@ Result MCP2515Handler::loadTXB0Data(const unsigned char data[], const unsigned c
 
     for (int i = 0; i < len; i++)
     {
-        if (this->readRegister(registers[i]) != data[i])
+        unsigned char regData;
+        this->readRegister(registers[i], &regData);
+        if (regData != data[i])
         {
             error = true;
             break;
@@ -616,7 +618,9 @@ Result MCP2515Handler::loadTXB1Data(const unsigned char data[], const unsigned c
 
     for (int i = 0; i < len; i++)
     {
-        if (this->readRegister(registers[i]) != data[i])
+        unsigned char regData;
+        this->readRegister(registers[i], &regData);
+        if (regData != data[i])
         {
             error = true;
             break;
@@ -661,7 +665,9 @@ Result MCP2515Handler::loadTXB2Data(const unsigned char data[], const unsigned c
 
     for (int i = 0; i < len; i++)
     {
-        if (this->readRegister(registers[i]) != data[i])
+        unsigned char regData;
+        this->readRegister(registers[i], &regData);
+        if (regData != data[i])
         {
             error = true;
             break;
