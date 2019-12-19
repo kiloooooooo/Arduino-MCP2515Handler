@@ -463,16 +463,16 @@ Result MCP2515Handler::readRXB0ID(long int *id)
     unsigned char eid8_;
     unsigned char eid0_;
 
-    long sidh = 0x00000000;
-    long sidl = 0x00000000;
-    long eid8 = 0x00000000;
-    long eid0 = 0x00000000;
-    long rxId = 0x00000000;
-
     this->readRegister(Register::RXB0SIDH, &sidh_);
     this->readRegister(Register::RXB0SIDL, &sidl_);
     this->readRegister(Register::RXB0EID8, &eid8_);
     this->readRegister(Register::RXB0EID0, &eid0_);
+
+    long sidh = sidh_;
+    long sidl = sidl_;
+    long eid8 = eid8_;
+    long eid0 = eid0_;
+    long rxId = 0x00000000;
 
     if ((sidl & 0x08) >> 3)
     {
@@ -506,16 +506,16 @@ Result MCP2515Handler::readRXB1ID(long int *id)
     unsigned char eid8_;
     unsigned char eid0_;
 
-    long sidh = 0x00000000;
-    long sidl = 0x00000000;
-    long eid8 = 0x00000000;
-    long eid0 = 0x00000000;
-    long rxId = 0x00000000;
-
     this->readRegister(Register::RXB1SIDH, &sidh_);
     this->readRegister(Register::RXB1SIDL, &sidl_);
     this->readRegister(Register::RXB1EID8, &eid8_);
     this->readRegister(Register::RXB1EID0, &eid0_);
+
+    long sidh = sidh_;
+    long sidl = sidl_;
+    long eid8 = eid8_;
+    long eid0 = eid0_;
+    long rxId = 0x00000000;
 
     if ((sidl & 0x08) >> 3)
     {
