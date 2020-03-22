@@ -245,10 +245,10 @@ void MCP2515Handler::readRXB0(CANFrame *frame)
     frame->isRemoteFrame = rxb0ctrl & 0x08;
 
     // ID
-    byte sidh = this->readReg(Register::RXB0SIDH);
-    byte sidl = this->readReg(Register::RXB0SIDL);
-    byte eid8 = this->readReg(Register::RXB0EID8);
-    byte eid0 = this->readReg(Register::RXB0EID0);
+    long sidh = this->readReg(Register::RXB0SIDH);
+    long sidl = this->readReg(Register::RXB0SIDL);
+    long eid8 = this->readReg(Register::RXB0EID8);
+    long eid0 = this->readReg(Register::RXB0EID0);
     long id = 0;
     if (sidl & 0x08)
     {
@@ -284,7 +284,7 @@ void MCP2515Handler::readRXB0(CANFrame *frame)
     };
     for (byte i = 0; i < 8; i++)
     {
-        if (i < frame.dlc)
+        if (i < frame->dlc)
             frame->data[i] = this->readReg(registers[i]);
         else
             frame->data[i] = 0x00;
@@ -298,10 +298,10 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
     frame->isRemoteFrame = rxb1ctrl & 0x08;
 
     // ID
-    byte sidh = this->readReg(Register::RXB1SIDH);
-    byte sidl = this->readReg(Register::RXB1SIDL);
-    byte eid8 = this->readReg(Register::RXB1EID8);
-    byte eid0 = this->readReg(Register::RXB1EID0);
+    long sidh = this->readReg(Register::RXB1SIDH);
+    long sidl = this->readReg(Register::RXB1SIDL);
+    long eid8 = this->readReg(Register::RXB1EID8);
+    long eid0 = this->readReg(Register::RXB1EID0);
     long id = 0;
     if (sidl & 0x08)
     {
@@ -337,7 +337,7 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
     };
     for (byte i = 0; i < 8; i++)
     {
-        if (i < frame.dlc)
+        if (i < frame->dlc)
             frame->data[i] = this->readReg(registers[i]);
         else
             frame->data[i] = 0x00;
