@@ -25,12 +25,12 @@ void MCP2515Handler::unselect()
     digitalWrite(this->csPin, HIGH);
 }
 
-void instruct(const Instruction inst)
+void MCP2515Handler::instruct(const Instruction inst)
 {
     this->instruct(static_cast<byte>(inst));
 }
 
-void instruct(const byte inst)
+void MCP2515Handler::instruct(const byte inst)
 {
     SPI.beginTransaction(this->spiSettings);
     this->select();
@@ -72,7 +72,7 @@ void MCP2515Handler::modReg(const Register reg, const byte mask, const byte valu
     SPI.transfer(value);
 }
 
-byte readReg(const Register reg)
+byte MCP2515Handler::readReg(const Register reg)
 {
     byte value;
 
@@ -85,7 +85,7 @@ byte readReg(const Register reg)
     return value;
 }
 
-void loadTXB0(const CANFrame frame)
+void MCP2515Handler::loadTXB0(const CANFrame frame)
 {
     // ID
     if (frame.id & 0x1FFFFFFF)
@@ -344,22 +344,22 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
     }
 }
 
-void transmitTXB0(void)
+void MCP2515Handler::transmitTXB0(void)
 {
     this->instruct(0x81);
 }
 
-void transmitTXB1(void)
+void MCP2515Handler::transmitTXB1(void)
 {
     this->instruct(0x82);
 }
 
-void transmitTXB2(void)
+void MCP2515Handler::transmitTXB2(void)
 {
     this->instruct(0x84);
 }
 
-void transmit(const bool txb0, const bool txb1, const bool txb2)
+void MCP2515Handler::transmit(const bool txb0, const bool txb1, const bool txb2)
 {
     byte inst = 0x80;
 
