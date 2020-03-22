@@ -178,7 +178,6 @@ public:
   void setup(void);
   void reset(void);
   void switchMode(const Mode mode);
-  void setBitrate(const Oscillator oscillator, const Bitrate bitrate);
   void writeReg(const Register reg, const byte value);
   void modReg(const Register reg, const byte mask, const byte value);
   byte readReg(const Register reg);

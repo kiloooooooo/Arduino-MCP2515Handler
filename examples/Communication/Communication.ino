@@ -1,9 +1,11 @@
 #include "mcp2515.hpp"
 
-#define RESET_PIN 8
+#define CS_PIN 9
 
 // #define MODE_TRANSMISSION
 #define MODE_RECEPTION
+
+using namespace MCP2515;
 
 MCP2515Handler *can;
 bool flag = false;
@@ -20,7 +22,7 @@ void setup()
 
   Serial.println("Initializing...");
   can = new MCP2515Handler(CS_PIN);
-  can->init();
+  can->setup();
   Serial.println("Initialization complete.");
 
 #ifdef MODE_TRANSMISSION
