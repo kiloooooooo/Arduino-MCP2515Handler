@@ -16,10 +16,6 @@ void setup()
 
   Serial.begin(115200);
 
-  pinMode(CS_PIN, OUTPUT);
-
-  digitalWrite(CS_PIN, HIGH);
-
   Serial.println("Initializing...");
   can = new MCP2515Handler(CS_PIN);
   can->setup();
