@@ -41,6 +41,8 @@ void MCP2515Handler::instruct(const byte inst)
 
 void MCP2515Handler::setup()
 {
+    pinMode(this->csPin, OUTPUT);
+    digitalWrite(this->csPin, HIGH);
     this->reset();
 }
 
