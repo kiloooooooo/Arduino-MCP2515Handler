@@ -59,19 +59,24 @@ void MCP2515Handler::switchMode(const Mode mode)
 void MCP2515Handler::writeReg(const Register reg, const byte value)
 {
     SPI.beginTransaction(this->spiSettings);
+    this->select();
     SPI.transfer(static_cast<byte>(Instruction::WRITE_REGISTER));
     SPI.transfer(static_cast<byte>(reg));
     SPI.transfer(value);
+    this->unselect();
     SPI.endTransaction();
 }
 
 void MCP2515Handler::modReg(const Register reg, const byte mask, const byte value)
 {
     SPI.beginTransaction(this->spiSettings);
+    this->select();
     SPI.transfer(static_cast<byte>(Instruction::BIT_MODIFY));
     SPI.transfer(static_cast<byte>(reg));
     SPI.transfer(mask);
     SPI.transfer(value);
+    this->unselect();
+    SPI.endTransaction();
 }
 
 byte MCP2515Handler::readReg(const Register reg)
@@ -79,9 +84,11 @@ byte MCP2515Handler::readReg(const Register reg)
     byte value;
 
     SPI.beginTransaction(this->spiSettings);
+    this->select();
     SPI.transfer(static_cast<byte>(Instruction::READ_REGISTER));
     SPI.transfer(static_cast<byte>(reg));
     value = SPI.transfer(0x00);
+    this->unselect();
     SPI.endTransaction();
 
     return value;
