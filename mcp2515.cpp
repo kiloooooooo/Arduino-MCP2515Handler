@@ -53,7 +53,7 @@ void MCP2515Handler::reset()
 
 void MCP2515Handler::switchMode(const Mode mode)
 {
-    this->modReg(Register::CANCTRL, 0xC0, (static_cast<byte>(mode)) << 5);
+    this->modReg(Register::CANCTRL, 0xE0, (static_cast<byte>(mode)) << 5);
 }
 
 void MCP2515Handler::writeReg(const Register reg, const byte value)
