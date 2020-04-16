@@ -147,7 +147,7 @@ enum struct Mode
   NORMAL = 0,
   SLEEP = 1,
   LOOPBACK = 2,
-  LISTENON = 3,
+  LISTENONLY = 3,
   CONFIG = 4
 };
 
