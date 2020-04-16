@@ -259,7 +259,7 @@ void MCP2515Handler::readRXB0(CANFrame *frame)
     long eid8 = this->readReg(Register::RXB0EID8);
     long eid0 = this->readReg(Register::RXB0EID0);
     long id = 0;
-    if (sidl & 0x08)
+    if ((sidl & 0x08) == 0x08)
     {
         // Extended ID
         id |= sidh << 21;          // SID[10:3]
@@ -314,7 +314,7 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
     long eid8 = this->readReg(Register::RXB1EID8);
     long eid0 = this->readReg(Register::RXB1EID0);
     long id = 0;
-    if (sidl & 0x08)
+    if ((sidl & 0x08) == 0x08)
     {
         // Extended ID
         id |= sidh << 21;          // SID[10:3]
