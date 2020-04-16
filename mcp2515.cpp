@@ -298,6 +298,8 @@ void MCP2515Handler::readRXB0(CANFrame *frame)
         else
             frame->data[i] = 0x00;
     }
+
+    this->modReg(Register::CANINTF, 0x01, 0x00);
 }
 
 void MCP2515Handler::readRXB1(CANFrame *frame)
@@ -351,6 +353,8 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
         else
             frame->data[i] = 0x00;
     }
+
+    this->modReg(Register::CANINTF, 0x02, 0x00);
 }
 
 void MCP2515Handler::transmitTXB0(void)
