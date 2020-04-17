@@ -119,7 +119,7 @@ void MCP2515Handler::loadTXB0(const CANFrame frame)
     }
 
     // DLC
-    byte dlc = (dlc & 0x0F) + (frame.isRemoteFrame ? 0x40 : 0x00);
+    byte dlc = (frame.dlc & 0x0F) + (frame.isRemoteFrame ? 0x40 : 0x00);
     this->writeReg(Register::TXB0DLC, dlc);
 
     // Data
@@ -166,7 +166,7 @@ void MCP2515Handler::loadTXB1(const CANFrame frame)
     }
 
     // DLC
-    byte dlc = (dlc & 0x0F) + (frame.isRemoteFrame ? 0x40 : 0x00);
+    byte dlc = (frame.dlc & 0x0F) + (frame.isRemoteFrame ? 0x40 : 0x00);
     this->writeReg(Register::TXB1DLC, dlc);
 
     // Data
