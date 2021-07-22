@@ -97,7 +97,7 @@ byte MCP2515Handler::readReg(const Register reg)
 void MCP2515Handler::loadTXB0(const CANFrame frame)
 {
     // ID
-    if (frame.id & 0x1FFFFFFF)
+    if (frame.isEID)
     {
         // Extended ID
         byte sidh = (frame.id & 0x1FE00000) >> 21;
@@ -144,7 +144,7 @@ void MCP2515Handler::loadTXB0(const CANFrame frame)
 void MCP2515Handler::loadTXB1(const CANFrame frame)
 {
     // ID
-    if (frame.id & 0x1FFFFFFF)
+    if (frame.isEID)
     {
         // Extended ID
         byte sidh = (frame.id & 0x1FE00000) >> 21;
@@ -191,7 +191,7 @@ void MCP2515Handler::loadTXB1(const CANFrame frame)
 void MCP2515Handler::loadTXB2(const CANFrame frame)
 {
     // ID
-    if (frame.id & 0x1FFFFFFF)
+    if (frame.isEID)
     {
         // Extended ID
         byte sidh = (frame.id & 0x1FE00000) >> 21;
@@ -267,12 +267,14 @@ void MCP2515Handler::readRXB0(CANFrame *frame)
         id |= (sidl & 0x03) << 16; // EID[17:16]
         id |= eid8 << 8;
         id |= eid0;
+        frame->isEID = true;
     }
     else
     {
         // Standard ID
         id |= sidh << 3;
         id |= (sidl & 0xE0) >> 5;
+        frame->isEID = false;
     }
     frame->id = id;
 
@@ -322,12 +324,14 @@ void MCP2515Handler::readRXB1(CANFrame *frame)
         id |= (sidl & 0x03) << 16; // EID[17:16]
         id |= eid8 << 8;
         id |= eid0;
+        frame->isEID = true;
     }
     else
     {
         // Standard ID
         id |= sidh << 3;
         id |= (sidl & 0xE0) >> 5;
+        frame->isEID = false;
     }
     frame->id = id;
 
